@@ -132,7 +132,7 @@ class check {
   }
 
   static flatten(arr) {
-    return arr.reduce((flat, next) => flat.concat(next), []);
+    return arr.flat ? arr.flat(Infinity) : arr.reduce((a, b) => a.concat(Array.isArray(b) ? check.flatten(b) : b), []);
   }
 
   // ─── String Utilities ───────────────────────────────
@@ -172,7 +172,7 @@ class check {
   }
 
   static get(obj, path) {
-    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+    return path.split('.').reduce((acc, part) => (acc && typeof acc === 'object') ? acc[part] : undefined, obj);
   }
 
   static set(obj, path, value) {
@@ -192,5 +192,78 @@ class check {
 
   static pick(obj, keys) {
     return Object.fromEntries(Object.entries(obj).filter(([key]) => keys.includes(key)));
+  }
+
+  static autoCode(n = 8) {
+    let text = '';
+    const t1 = new Date().getTime();
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' + t1;
+    for (let i = 0; i < n; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+  }
+
+  static getUserRef() {
+    return document.referrer !== '' ? document.referrer : 'direct';
+  }
+
+  static isIncluded(fileUrl) {
+    return [...document.scripts].some(s => s.src === fileUrl) ||
+           [...document.styleSheets].some(s => s.href === fileUrl);
+  }
+
+  static getFileExt(fileUrl) {
+    return fileUrl.split('.').pop().toLowerCase();
+  }
+
+  static includeOnce(fileUrl) {
+    if (this.isIncluded(fileUrl)) return;
+    const ext = this.getFileExt(fileUrl);
+    const head = document.head;
+
+    if (ext === 'js') {
+      const script = document.createElement('script');
+      script.src = fileUrl;
+      script.type = 'text/javascript';
+      head.appendChild(script);
+    } else if (ext === 'css') {
+      const link = document.createElement('link');
+      link.href = fileUrl;
+      link.rel = 'stylesheet';
+      head.appendChild(link);
+    }
+  }
+
+  static jsonToTable(jsonArray) {
+    if (!Array.isArray(jsonArray) || jsonArray.length === 0) return null;
+
+    const table = document.createElement('table');
+    const thead = document.createElement('thead');
+    const tbody = document.createElement('tbody');
+
+    const headers = Object.keys(jsonArray[0]);
+    const headRow = document.createElement('tr');
+    headers.forEach(key => {
+      const th = document.createElement('th');
+      th.textContent = key;
+      headRow.appendChild(th);
+    });
+    thead.appendChild(headRow);
+
+    jsonArray.forEach(item => {
+      const row = document.createElement('tr');
+      headers.forEach(key => {
+        const td = document.createElement('td');
+        td.textContent = item[key];
+        row.appendChild(td);
+      });
+      tbody.appendChild(row);
+    });
+
+    table.appendChild(thead);
+    table.appendChild(tbody);
+
+    return table;
   }
 }
