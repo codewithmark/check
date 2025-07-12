@@ -30,99 +30,108 @@ Just copy `check.js` into your project. Or use it inline with a `<script>` tag:
 
 ## 📘 Usage
 
+## 🔍 Function Examples
+
+### 📏 Size
 ```js
-// String
-check.size("hello");                // 5
-check.capitalize("hello");         // "Hello"
-check.toSlug("My App!");           // "my-app"
-
-// Type checking
-check.isArray([1, 2]);             // true
-check.isObject({ a: 1 });          // true
-check.isNullOrUndefined(null);    // true
-
-// Validation
-check.validateEmail("a@b.com");   // true
-check.isURL("https://site.com");  // true
-check.isJSON('{"x":1}');          // true
-
-// Data lookups
-const arr = [{ id: 1 }, { id: 2 }];
-check.findRow(arr, { id: 2 });     // { id: 2 }
-
-const obj = { a: { id: 1 }, b: { id: 2 } };
-check.findObj(obj, { id: 2 });     // { id: 2 }
-
-// Object/array utils
-check.pluck([{ name: "A" }, { name: "B" }], "name"); // ['A', 'B']
-check.unique([1, 1, 2]);           // [1, 2]
-check.flatten([1, [2, 3]]);        // [1, 2, 3]
-
-// Nested access
-const user = { profile: { name: "Alice" } };
-check.get(user, "profile.name");   // "Alice"
-check.set(user, "profile.age", 30);
-// user = { profile: { name: "Alice", age: 30 } }
+check.size("hello");               // 5
+check.size([1, 2, 3]);             // 3
+check.size({ a: 1, b: 2 });        // 2
+check.size(12345);                 // 5
 ```
 
 ---
 
-## 🛠 Full API Reference
-
-### 📏 Size
-- `size(value)`
-
 ### 🧠 Type Checks
-- `isObject(value)`
-- `isArray(value)`
-- `isString(value)`
-- `isNumber(value)`
-- `isBoolean(value)`
-- `isFunction(value)`
-- `isNullOrUndefined(value)`
-- `isEmpty(value)`
-
-### ✅ Validation
-- `validateEmail(email)`
-- `isInt(value)`
-- `isFloat(value)`
-- `isPositive(value)`
-- `isNegative(value)`
-- `isIn(value, list)`
-- `isMatch(value, regex)`
-- `isDate(value)`
-- `isURL(value)`
-- `isJSON(value)`
-
-### 🔍 Finders
-- `findRow(array, { id })`
-- `findObj(object, { id })`
-
-### 🧰 Object/Array Tools
-- `hasKey(obj, key)`
-- `keys(obj)`
-- `values(obj)`
-- `pluck(arr, key)`
-- `unique(arr)`
-- `flatten(arr)`
-
-### ✂️ String Tools
-- `capitalize(str)`
-- `trim(str)`
-- `toSlug(str)`
-- `contains(str, substring)`
-- `startsWith(str, prefix)`
-- `endsWith(str, suffix)`
-
-### ⚙️ Advanced
-- `deepClone(obj)`
-- `deepEqual(a, b)`
-- `get(obj, path)`
-- `set(obj, path, value)`
-- `omit(obj, keys)`
-- `pick(obj, keys)`
+```js
+check.isObject({ a: 1 });          // true
+check.isArray([1, 2]);             // true
+check.isString("text");            // true
+check.isNumber(123);               // true
+check.isBoolean(false);            // true
+check.isFunction(() => {});        // true
+check.isNullOrUndefined(null);     // true
+check.isNullOrUndefined(undefined); // true
+check.isEmpty([]);                 // true
+check.isEmpty({});                 // true
+```
 
 ---
+
+### ✅ Validation
+```js
+check.validateEmail("a@b.com");             // true
+check.isInt(42);                            // true
+check.isFloat(3.14);                        // true
+check.isPositive(5);                        // true
+check.isNegative(-1);                       // true
+check.isIn("b", ["a", "b", "c"]);           // true
+check.isIn("z", { x: "y", z: "w" });        // true
+check.isMatch("abc123", /^[a-z]+\d+$/);     // true
+check.isDate("2024-01-01");                 // true
+check.isURL("https://site.com");            // true
+check.isJSON('{"a":1}');                    // true
+```
+
+---
+
+### 🔍 Finders
+```js
+const arr = [{ id: 1, name: "A" }, { id: 2, name: "B" }];
+check.findRow(arr, { id: 2 });              // { id: 2, name: "B" }
+
+const obj = { x: { id: 1 }, y: { id: 2 } };
+check.findObj(obj, { id: 1 });              // { id: 1 }
+```
+
+---
+
+### 🧰 Object/Array Tools
+```js
+check.hasKey({ a: 1 }, "a");                // true
+check.keys({ a: 1, b: 2 });                 // ['a', 'b']
+check.values({ a: 1, b: 2 });               // [1, 2]
+
+const users = [{ name: "A" }, { name: "B" }];
+check.pluck(users, "name");                 // ['A', 'B']
+
+check.unique([1, 1, 2, 3]);                 // [1, 2, 3]
+check.flatten([1, [2, 3], [4]]);            // [1, 2, 3, 4]
+```
+
+---
+
+### ✂️ String Tools
+```js
+check.capitalize("hello");                 // "Hello"
+check.trim("  space  ");                   // "space"
+check.toSlug("My App Rocks!");             // "my-app-rocks"
+check.contains("hello world", "world");    // true
+check.startsWith("file.txt", "file");      // true
+check.endsWith("image.png", ".png");       // true
+```
+
+---
+
+### ⚙️ Advanced
+```js
+const obj = { a: 1 };
+const clone = check.deepClone(obj);
+clone.a = 2;
+console.log(obj.a);                        // 1 (original unchanged)
+
+check.deepEqual({ x: 1 }, { x: 1 });       // true
+check.deepEqual([1, 2], [2, 1]);           // false
+
+const nested = { user: { name: "Alice" } };
+check.get(nested, "user.name");            // "Alice"
+check.set(nested, "user.age", 30);
+// nested = { user: { name: "Alice", age: 30 } }
+
+check.omit({ a: 1, b: 2 }, ["a"]);         // { b: 2 }
+check.pick({ a: 1, b: 2 }, ["b"]);         // { b: 2 }
+```
+
 
 ## 🤓 Who’s This For?
 
